@@ -329,9 +329,9 @@ class MetalDistributor extends Tools{
   
   console.log("Running Loop")
   while (true) {
-	//await distributor.checkOldestUnCheckedSteamId()
+	await distributor.checkOldestUnCheckedSteamId()
 	console.log("sleeping")
-	//await delay(settings.minutesBetweenBotChecks * 60000 * 0.5)
+	await delay(settings.minutesBetweenBotChecks * 60000 * 0.5)
 	await distributor.checkForKeySale()
 	await delay(settings.minutesBetweenBotChecks * 60000 * 0.5)
   } 
