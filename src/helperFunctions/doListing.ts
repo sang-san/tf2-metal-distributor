@@ -10,6 +10,7 @@ import SteamTradeOfferManager from "steam-tradeoffer-manager";
 import PricesTF, {RequestOptions, parsePrice} from "prices-tf-wrapper";
 import {CurrencyExchange} from 'tf2-currency-exchange';
 import { getTradeUrl } from "./getTradeUrl";
+import { doubleRawItem, proxyLoadInv } from "./proxyLoadInv";
 
 const SteamCommunity = require('steamcommunity');
 
@@ -22,14 +23,24 @@ export interface items_to_pick {
     }
 }
 
+function convertDoubleRawItemsToTradeOfferItems(items: doubleRawItem[]): SteamTradeOfferManager.TradeOfferItem[] {
+	return items.map((item) => ({
+		assetid: item.assetid,
+		appid: 440,
+		contextid: item.contextid,
+		id: item.assetid,
+		amount: 1
+	}))
+}
+
 function actually_pick_items(
-	inv: Array<TradeOfferManager.EconItem>,
+	inv: Array<doubleRawItem>,
 	items_to_pick: items_to_pick
 ): {
 	worked: boolean,
-	items: Array<TradeOfferManager.EconItem>
+	items: Array<doubleRawItem>
 } {
-	var items_to_return: Array<TradeOfferManager.EconItem> = []
+	var items_to_return: Array<doubleRawItem> = []
 	for (let key in items_to_pick) {
 		var items = inv.filter(item => item.market_name == key && itemIsCraftable(item) == items_to_pick[key].is_craftable)
 		if (items.length < items_to_pick[key].amount) {
@@ -51,14 +62,14 @@ function actually_pick_items(
 async function pick_items(
     name: string,
     listing: SnapshotListing,
-    item_buyer_inv: Array<TradeOfferManager.EconItem>,
-	item_holder_inv: Array<TradeOfferManager.EconItem>,
+    item_buyer_inv: Array<doubleRawItem>,
+	item_holder_inv: Array<doubleRawItem>,
 	isCraftable: boolean,
 	is_key_sell: boolean
 ): Promise<{
 	worked: boolean,
-	item_buyer_items: Array<TradeOfferManager.EconItem>,
-	item_holder_items: Array<TradeOfferManager.EconItem>,
+	item_buyer_items: Array<doubleRawItem>,
+	item_holder_items: Array<doubleRawItem>,
 }> {
     console.log("Picking Items for " + name)
     var key_price = parsePrice(await api.getPrice('5021;6')).buy.metal;
@@ -123,19 +134,13 @@ export async function doListing(
     listing: SnapshotListing,
     manager: TradeOfferManager,
     community: any, //SteamCommunity
-    botInv: SteamTradeOfferManager.EconItem[]
+    botInv: doubleRawItem[]
 ): Promise<boolean> {
-    var partnerInv = await loadInv(manager, listing.steamid)
+    var partnerInv = await proxyLoadInv(listing.steamid)
 
     console.log("The Bot has " + botInv.length + " Items and the Partner " + listing.steamid + " : " + partnerInv.length + " Items.")
 
-    if (
-        botInv.filter(item => item.market_name == "Refined Metal").length < 80 
-        && botInv.filter(item => item.market_name == "Mann Co. Supply Crate Key").length !== 0
-        && name !== "Mann Co. Supply Crate Key"
-    ) {
-        //await do_key()
-    }
+
 
     var picked_items = await pick_items(
 		name,
@@ -161,8 +166,8 @@ export async function doListing(
 
     let offer = manager.createOffer(urlRes.url);	
 
-	offer.addMyItems((listing.intent == "buy") ? picked_items.item_holder_items : picked_items.item_buyer_items);
-	offer.addTheirItems((listing.intent == "buy") ? picked_items.item_buyer_items : picked_items.item_holder_items);
+	offer.addMyItems((listing.intent == "buy") ? convertDoubleRawItemsToTradeOfferItems(picked_items.item_holder_items) : convertDoubleRawItemsToTradeOfferItems(picked_items.item_buyer_items));
+	offer.addTheirItems((listing.intent == "buy") ? convertDoubleRawItemsToTradeOfferItems(picked_items.item_buyer_items) : convertDoubleRawItemsToTradeOfferItems(picked_items.item_holder_items));
 	
 	offer.setMessage(getOfferMessage());
 	var status = await sendOffer(offer)

@@ -17,6 +17,7 @@ export const settings: {
         maxKeys: number
     }[]
     minutesBetweenBotChecks: number
+    distributorMinRef: number
     stnKey: string
 } = JSON.parse(FS.readFileSync("settings.json", 'utf8'))
 export type Bot = typeof settings.activeBots[0]

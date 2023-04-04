@@ -16,6 +16,7 @@ const TeamFortress2 = require('tf2');
 import SteamTradeOfferManager from "steam-tradeoffer-manager";
 import { getListingSnapshot } from './helperFunctions/getListingSnapshot';
 import { doubleRawItem, proxyLoadInv } from './helperFunctions/proxyLoadInv';
+import { doListing } from './helperFunctions/doListing';
 
 
 const api = new PricesTF();
@@ -155,6 +156,42 @@ class MetalDistributor extends Tools{
     super()
   }
 
+  isItTimeToSellAKey(inv: doubleRawItem[]) {
+	let filtered = this.filterItemsToPureOnly(inv)
+	if (
+		filtered.refined.length < settings.distributorMinRef
+		&& filtered.keys
+	) {
+		return true;
+	}
+
+	return false;
+  }
+
+  async checkForKeySale() {
+	let distributorInv = await proxyLoadInv(settings.steamAccountId)
+	if (this.isItTimeToSellAKey(distributorInv)) {
+		let refRate = parsePrice(await api.getPrice('5021;6')).buy.metal;
+		let snapShotResponse = await getListingSnapshot("Mann Co. Supply Crate Key")
+		
+		let bestBuyRefRate = snapShotResponse.buy_listings[0].currencies.metal ? snapShotResponse.buy_listings[0].currencies.metal : 0
+		
+		if (bestBuyRefRate >= refRate) {
+			let botInv = await proxyLoadInv(snapShotResponse.buy_listings[0].steamid)
+			await doListing(
+				"Mann Co. Supply Crate Key",
+				true,
+				snapShotResponse.buy_listings[0],
+				this.manager,
+				this.community,
+				botInv
+			)
+		}
+	} else {
+		console.log("Not Doing Key Sale")
+	}
+  }
+
   async checkSteamId(bot: Bot) {
 	let possibleOfferContent: {
 		distributorItems: doubleRawItem[],
@@ -163,7 +200,7 @@ class MetalDistributor extends Tools{
 		distributorItems: [],
 		botItems: []
 	}
-
+	
 	let theirInv = await this.proxyLoadInv(bot.steamId)
 	
 	let theirDistributorRes = this.parts.distributor.getDistributorBotSideOfExchangeWithBot(bot, theirInv)
@@ -292,8 +329,10 @@ class MetalDistributor extends Tools{
   
   console.log("Running Loop")
   while (true) {
-	await distributor.checkOldestUnCheckedSteamId()
+	//await distributor.checkOldestUnCheckedSteamId()
 	console.log("sleeping")
-	await delay(settings.minutesBetweenBotChecks * 60000)
+	//await delay(settings.minutesBetweenBotChecks * 60000 * 0.5)
+	await distributor.checkForKeySale()
+	await delay(settings.minutesBetweenBotChecks * 60000 * 0.5)
   } 
 })();

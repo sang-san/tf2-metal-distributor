@@ -18,7 +18,7 @@ export function loadInv(manager: TradeOfferManager, steam_id: any){
 			} else {
 				resolve(inv)
 			}
-		})
+		})    
 	})
 }
 

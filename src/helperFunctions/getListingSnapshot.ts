@@ -98,11 +98,12 @@ function isSpecialListing (requiredIntent: "buy" | "sell", listing: SnapshotList
     }
 
     if (
-        ![
+        [
             "76561199111029051",
             "76561199059780855"
         ].includes(listing.steamid)
     ) {
+        console.log("firing")
         return false
     }
 

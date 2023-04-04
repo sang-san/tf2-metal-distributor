@@ -1,6 +1,10 @@
 import SteamTradeOfferManager, { EconItem } from "steam-tradeoffer-manager";
+import { doubleRawItem } from "./proxyLoadInv";
 
-export var itemIsCraftable = (item: SteamTradeOfferManager.EconItem) => {
+export var itemIsCraftable = (item: doubleRawItem) => {
+    if (!item.descriptions) { 
+        return true
+    }
     for (let i = 0; i < item.descriptions.length; i++) {
         if (item.descriptions[i].value == '( Not Usable in Crafting )') {
             return false;
@@ -10,7 +14,7 @@ export var itemIsCraftable = (item: SteamTradeOfferManager.EconItem) => {
     return true;
 }
 
-export var get_pure_item_count = (inv: SteamTradeOfferManager.EconItem[]) => {
+export var get_pure_item_count = (inv: doubleRawItem[]) => {
     let returnObj = {
         "keys": 0,
         "ref": 0,
@@ -38,7 +42,7 @@ export var get_pure_item_count = (inv: SteamTradeOfferManager.EconItem[]) => {
     return returnObj
 }
 
-export function itemListToString (itemList: SteamTradeOfferManager.EconItem[]): string {
+export function itemListToString (itemList: doubleRawItem[]): string {
     var returnString = ""
     var itemDict: {
         [index: string]: number
