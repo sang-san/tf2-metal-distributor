@@ -31,6 +31,8 @@ The Type for the settings.json file that you need to create is :
         maxKeys: number
     }[]
     minutesBetweenBotChecks: number
+    distributorMinRef: number
+    stnKey: string
 }
 ```
 
