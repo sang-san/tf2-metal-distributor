@@ -173,16 +173,22 @@ class MetalDistributor extends Tools{
 	if (this.isItTimeToSellAKey(distributorInv)) {
 		let refRate = parsePrice(await api.getPrice('5021;6')).buy.metal - 2;
 		let snapShotResponse = await getListingSnapshot("Mann Co. Supply Crate Key")
-		
+		if (!snapShotResponse.buy_listings) {
+			console.log("no buy listings")
+			return null
+		}
 		let bestBuyRefRate = snapShotResponse.buy_listings[0].currencies.metal ? snapShotResponse.buy_listings[0].currencies.metal : 0
 		
 		console.log("Best Ref Rate in the buy Listings was " + bestBuyRefRate + " pricestf rate " + refRate)
 		if (bestBuyRefRate >= refRate) {
-			let botInv = await proxyLoadInv(snapShotResponse.buy_listings[0].steamid)
+			let goodBuyListings = snapShotResponse.buy_listings.filter(listing => (listing.currencies.metal ? listing.currencies.metal : 0) >= refRate)
+			console.log("Got " + goodBuyListings.length + " good buy listings for keys")
+
+			let botInv = await proxyLoadInv(settings.steamAccountId)
 			await doListing(
 				"Mann Co. Supply Crate Key",
 				true,
-				snapShotResponse.buy_listings[0],
+				goodBuyListings[Math.floor(Math.random() * goodBuyListings.length)],
 				this.manager,
 				this.community,
 				botInv

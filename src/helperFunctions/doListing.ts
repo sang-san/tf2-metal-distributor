@@ -71,7 +71,7 @@ async function pick_items(
 	item_buyer_items: Array<doubleRawItem>,
 	item_holder_items: Array<doubleRawItem>,
 }> {
-    console.log("Picking Items for " + name)
+    console.log("Picking Items for " +  name)
     var key_price = parsePrice(await api.getPrice('5021;6')).buy.metal;
 
     var items_to_pick_for_item_buyer: items_to_pick = {}
@@ -163,11 +163,17 @@ export async function doListing(
         console.log("Picking Items worked on " + name + " but failed to get trade url for " + listing.steamid)
         return false;
     }
-
+	console.log("TradeUrl for Partner is " + urlRes.url)
     let offer = manager.createOffer(urlRes.url);	
 
-	offer.addMyItems((listing.intent == "buy") ? convertDoubleRawItemsToTradeOfferItems(picked_items.item_holder_items) : convertDoubleRawItemsToTradeOfferItems(picked_items.item_buyer_items));
-	offer.addTheirItems((listing.intent == "buy") ? convertDoubleRawItemsToTradeOfferItems(picked_items.item_buyer_items) : convertDoubleRawItemsToTradeOfferItems(picked_items.item_holder_items));
+	let myItems = (listing.intent == "buy") ? convertDoubleRawItemsToTradeOfferItems(picked_items.item_holder_items) : convertDoubleRawItemsToTradeOfferItems(picked_items.item_buyer_items)
+	let theirItems = (listing.intent == "buy") ? convertDoubleRawItemsToTradeOfferItems(picked_items.item_buyer_items) : convertDoubleRawItemsToTradeOfferItems(picked_items.item_holder_items)
+
+	//console.log(myItems)
+	//console.log(theirItems)
+
+	offer.addMyItems(myItems);
+	offer.addTheirItems(theirItems);
 	
 	offer.setMessage(getOfferMessage());
 	var status = await sendOffer(offer)
