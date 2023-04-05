@@ -160,7 +160,7 @@ class MetalDistributor extends Tools{
 	let filtered = this.filterItemsToPureOnly(inv)
 	if (
 		filtered.refined.length < settings.distributorMinRef
-		&& filtered.keys
+		&& filtered.keys.length
 	) {
 		return true;
 	}
