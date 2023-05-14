@@ -154,11 +154,11 @@ export async function proxyLoadInv(steamId: string): Promise<doubleRawItem[]> {
       });
       
 
-    if (resp.statusCode != 200) {
+    if (resp.statusCode != 200 || !resp.body.assets) {
         console.log("Proxy inv Request Failed, for steamid " + steamId + " " + resp.statusCode)
 
         return await proxyLoadInv(steamId)
     }
-
+    
     return parseInvResponse(resp.body)
 }
