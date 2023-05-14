@@ -156,6 +156,7 @@ export async function proxyLoadInv(steamId: string): Promise<doubleRawItem[]> {
 
     if (resp.statusCode != 200) {
         console.log("Proxy inv Request Failed, for steamid " + steamId + " " + resp.statusCode)
+        console.log(resp.toJSON())
         return await proxyLoadInv(steamId)
     }
 
