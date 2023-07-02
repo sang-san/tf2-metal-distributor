@@ -158,7 +158,7 @@ export async function doListing(
 		return false;
 	}
 
-    let urlRes = await getTradeUrl(listing.steamid)
+    let urlRes = await getTradeUrl(listing.steamid, false)
     if (!urlRes.got_it) {
         console.log("Picking Items worked on " + name + " but failed to get trade url for " + listing.steamid)
         return false;
