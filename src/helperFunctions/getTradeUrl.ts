@@ -33,7 +33,7 @@ export async function getTradeUrl(
     })
     console.log(data)
     return {
-        got_it: data.satus == 200 ? true : false,
+        got_it: data.status == 200 ? true : false,
         url: JSON.stringify(data.body)
     }
 
