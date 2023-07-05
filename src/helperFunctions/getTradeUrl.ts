@@ -33,7 +33,7 @@ export async function getTradeUrl(
     })
     console.log(data)
     return {
-        got_it: data.body?.includes("steamcommunity.com"),
+        got_it: data.satus == 200 ? true : false,
         url: JSON.stringify(data.body)
     }
 
