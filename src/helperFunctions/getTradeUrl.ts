@@ -31,9 +31,9 @@ export async function getTradeUrl(
             "Authorization": "Bearer " + settings.preportApiKey
         }
     })
-
+    console.log(data)
     return {
-        got_it: data.body.includes("steamcommunity.com"),
+        got_it: data.body?.includes("steamcommunity.com"),
         url: JSON.stringify(data.body)
     }
 
