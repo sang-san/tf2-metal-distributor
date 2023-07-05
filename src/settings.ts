@@ -8,6 +8,7 @@ export const settings: {
     steamAccountId: string
     proxyUrl: string
     ownerSteamId: string
+    preportApiKey: string
     activeBots: {
         steamId: string
         tradeUrl: string

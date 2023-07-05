@@ -25,6 +25,18 @@ export async function getTradeUrl(
     url: string
 }> {
     var url = ""
+
+    const data = await axios.get("https://listings.perport.net/v1/tradeurl?steamid=" + steamid, {
+        headers: {
+            "Authorization": "Bearer " + settings.preportApiKey
+        }
+    })
+
+    return {
+        got_it: data.body.includes("steamcommunity.com"),
+        url: JSON.stringify(data.body)
+    }
+
     if (!useOldBackpack) {
         try {
             const data = await axios.get("https://next.backpack.tf/profiles/" + steamid, {
