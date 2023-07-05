@@ -34,7 +34,7 @@ export async function getTradeUrl(
     
     return {
         got_it: data.status == 200 ? true : false,
-        url: JSON.stringify(data.data).replace('"', "")
+        url: data.data
     }
 
     if (!useOldBackpack) {
