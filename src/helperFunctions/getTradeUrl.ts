@@ -24,7 +24,7 @@ export async function getTradeUrl(
     got_it: boolean,
     url: string
 }> {
-    
+    let url = ""    
 
     const data = await axios.get("https://listings.perport.net/v1/tradeurl?steamid=" + steamid, {
         headers: {
