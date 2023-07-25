@@ -41,6 +41,7 @@ export function acceptOffer(community: any, offer:any){
 export function sendOffer(offer:any){
 	return new Promise<string>(resolve => {
 	  offer.send((err:any, status:any)=>{
+		console.log(err)
 		  if(err)return resolve("");
 		  else resolve(status)
 		})

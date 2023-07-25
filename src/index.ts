@@ -247,6 +247,7 @@ class MetalDistributor extends Tools{
 		|| possibleOfferContent.botItems.length
 	) {
 		console.log("Constructing Offer")
+		//console.log(bot.steamId, bot.tradeUrl, possibleOfferContent.distributorItems.map(item => item.market_name))
 		let offer = this.manager.createOffer(bot.tradeUrl)
 
 		if (possibleOfferContent.distributorItems.length) {
@@ -259,7 +260,7 @@ class MetalDistributor extends Tools{
 			offer.addTheirItems(lst)
 		}
 
-		offer.setMessage("dip dup nack gift")
+		offer.setMessage("dip dup knack gift")
 		
 		var status = await this.sendOffer(offer)
 
